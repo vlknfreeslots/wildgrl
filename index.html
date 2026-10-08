@@ -2,23 +2,41 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Самый надежный способ для открытия в той же вкладке на уровне HTML -->
-    <meta http-equiv="refresh" content="0; url=https://wild-grl.org">
-    
-    <link rel="canonical" href="https://wild-grl.org">
-    <title>Перенаправление...</title>
-    
-    <script>
-        // Принудительно открываем в текущем окне (window.self)
-        window.self.location.replace("https://wild-grl.org");
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка...</title>
+    <style>
+        body { margin: 0; background: #fff; }
+        /* Делаем ссылку на весь экран, но прозрачной */
+        #hidden-link {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: block;
+            z-index: 9999;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <noscript>
-        <!-- Если всё отключено, резервная ссылка строго в текущем окне (target="_self") -->
-        <p>Если перенаправление не произошло автоматически, 
-           <a href="https://wild-grl.org" target="_self">нажмите на эту ссылку</a>.
-        </p>
-    </noscript>
+
+    <!-- Ссылка с явным указанием открываться в том же окне -->
+    <a id="hidden-link" href="https://wild-grl.org" target="_self"></a>
+
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                var link = document.getElementById('hidden-link');
+                
+                // Создаем событие настоящего клика мыши/тапа
+                var clickEvent = new MouseEvent('click', {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true
+                });
+                
+                // Имитируем нажатие пользователя
+                link.dispatchEvent(clickEvent);
+            }, 500); // небольшая пауза, чтобы WebView успел прогрузить DOM
+        };
+    </script>
 </body>
 </html>
