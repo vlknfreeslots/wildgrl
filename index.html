@@ -5,73 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WildGrl — Подтверждение возраста</title>
     <style>
-        /* Общие стили для темного фонда */
+        /* Общие стили и центрирование */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #121212;
-            color: #ffffff; /* Белый цвет текста по умолчанию */
+            color: #ffffff;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            /* Предотвращает появление полос прокрутки */
+            height: 100vh; 
+            overflow: hidden;
             text-align: center;
+            box-sizing: border-box;
         }
 
         /* Контейнер окна предупреждения */
         .warning-box {
             background-color: #1e1e1e;
-            padding: 40px 30px;
+            padding: 30px 20px;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            max-width: 450px;
-            width: 90%;
-            border: 1px solid #ffffff; /* Белая рамка */
+            max-width: 400px;
+            width: 85%;
+            border: 1px solid #ffffff;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         /* Название приложения */
         .brand {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: bold;
-            color: #ffffff; /* Белый текст */
-            margin-bottom: 10px;
+            color: #ffffff;
+            margin-bottom: 8px;
             letter-spacing: 2px;
         }
 
         /* Заголовок "Только для взрослых" */
         h2 {
-            font-size: 1.5rem;
-            color: #ffffff; /* Белый текст */
+            font-size: 1.3rem;
+            color: #ffffff;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         /* Текст предупреждения */
         p {
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #ffffff; /* Белый текст */
-            margin-bottom: 30px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 25px;
         }
 
         /* Блок с кнопками */
         .buttons-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
         /* Общие стили для кнопок */
         .btn {
-            padding: 15px;
-            font-size: 1.1rem;
+            padding: 14px;
+            font-size: 1rem;
             font-weight: bold;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.1s;
             text-decoration: none;
+            display: block;
         }
 
         .btn:active {
@@ -99,6 +109,32 @@
             background-color: #444444;
             color: #ffffff;
         }
+
+        /* Адаптивность под маленькие экраны смартфонов */
+        @media (max-height: 600px), (max-width: 360px) {
+            .warning-box {
+                padding: 20px 15px;
+            }
+            .brand {
+                font-size: 1.8rem;
+                margin-bottom: 5px;
+            }
+            h2 {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }
+            p {
+                font-size: 0.85rem;
+                margin-bottom: 15px;
+            }
+            .btn {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            .buttons-container {
+                gap: 8px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -110,7 +146,7 @@
         <!-- Подзаголовок -->
         <h2>Только для взрослых</h2>
         
-        <!-- Измененный текст сообщения -->
+        <!-- Текст сообщения -->
         <p>Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
         
         <!-- Кнопки выбора -->
