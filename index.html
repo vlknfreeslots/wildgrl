@@ -2,7 +2,6 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Блокируем масштабирование, чтобы сайт сидел как родное приложение -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Загрузка...</title>
     <style>
@@ -20,25 +19,28 @@
 
     <script>
         window.onload = function() {
-            // Целевой сайт, который мы хотим отобразить
+            // Целевой сайт
             const targetUrl = 'https://wild-grl.org';
+            
+            // Используем альтернативный высокоскоростной CORS-прокси
+            const proxyUrl = 'https://corsproxy.io?' + encodeURIComponent(targetUrl);
 
-            // Скачиваем HTML-код целевого сайта через прокси "allorigins"
-            fetch('https://allorigins.win' + encodeURIComponent(targetUrl))
+            fetch(proxyUrl)
                 .then(response => {
-                    if (response.ok) return response.json();
-                    throw new Error('Ошибка загрузки данных');
+                    if (!response.ok) throw new Error('Ошибка сервера');
+                    return response.text(); // Читаем как чистый HTML-текст
                 })
-                .then(data => {
-                    // Полностью стираем страницу GitHub и перезаписываем её скачанным кодом
+                .then(htmlContent => {
+                    // Полностью заменяем страницу контентом без смены домена
                     document.open();
-                    document.write(data.contents);
+                    document.write(htmlContent);
                     document.close();
                 })
                 .catch(err => {
-                    // Резервный случай, если у пользователя совсем пропал интернет
+                    // Если GiveMeApp заблокировал даже этот запрос, выводим прямую безопасную кнопку
                     document.getElementById('loader-container').innerHTML = 
-                        '<p>Не удалось подключиться к серверу. Пожалуйста, проверьте подключение к сети.</p>';
+                        '<p style="font-size:16px;">Перейти в личный кабинет:</p>' +
+                        '<a href="https://wild-grl.org" style="display:inline-block; padding:12px 24px; background:#0969da; color:#fff; text-decoration:none; border-radius:6px; font-weight:bold;">ОТКРЫТЬ САЙТ</a>';
                 });
         };
     </script>
