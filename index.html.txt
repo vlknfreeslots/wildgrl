@@ -1,0 +1,31 @@
+<!-- 1. Шаблон нашего кастомного веб-компонента -->
+<template id="card-template">
+  <style>
+    .card { border: 2px solid #333; padding: 20px; border-radius: 8px; width: 250px; }
+    .title { font-weight: bold; font-size: 1.2em; margin-bottom: 10px; color: #007bff; }
+  </style>
+  <div class="card">
+    <!-- Именованный слот для заголовка -->
+    <div class="title"><slot name="title">Дефолтный заголовок</slot></div>
+    <!-- Неименованный (дефолтный) слот для основного контента -->
+    <div class="content"><slot>Здесь будет текст...</slot></div>
+  </div>
+</template>
+
+<!-- 2. Использование компонента на странице -->
+<my-card>
+  <span slot="title">Моя карточка</span>
+  Это основной текст, который автоматически попадёт в дефолтный слот.
+</my-card>
+
+<!-- 3. Скрипт для регистрации кастомного элемента -->
+<script>
+  customElements.define('my-card', class extends HTMLElement {
+    constructor() {
+      super();
+      const template = document.getElementById('card-template').content;
+      // Создаем Shadow DOM и прикрепляем шаблон
+      this.attachShadow({ mode: 'open' }).appendChild(template.cloneNode(true));
+    }
+  });
+</script>
