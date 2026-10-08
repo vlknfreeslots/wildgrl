@@ -2,24 +2,22 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Мгновенное перенаправление на уровне HTML для браузеров и роботов -->
-    <meta http-equiv="refresh" content="0; url=https://wild-grl.org/">
+    <!-- Самый надежный способ для открытия в той же вкладке на уровне HTML -->
+    <meta http-equiv="refresh" content="0; url=https://wild-grl.org">
     
-    <!-- Ссылка на каноническую страницу сайта wild-grl.org -->
-    <link rel="canonical" href="https://wild-grl.org/">
-    
+    <link rel="canonical" href="https://wild-grl.org">
     <title>Перенаправление...</title>
     
-    <!-- Моментальный редирект через JavaScript (не оставляет страницу в истории браузера) -->
     <script>
-        window.location.replace("https://wild-grl.org/");
+        // Принудительно открываем в текущем окне (window.self)
+        window.self.location.replace("https://wild-grl.org");
     </script>
 </head>
 <body>
-    <!-- Резервный блок для редких случаев, когда скрипты и мета-теги отключены -->
     <noscript>
+        <!-- Если всё отключено, резервная ссылка строго в текущем окне (target="_self") -->
         <p>Если перенаправление не произошло автоматически, 
-           <a href="https://wild-grl.org/">нажмите на эту ссылку</a>.
+           <a href="https://wild-grl.org" target="_self">нажмите на эту ссылку</a>.
         </p>
     </noscript>
 </body>
