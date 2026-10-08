@@ -2,47 +2,127 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Загрузка...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGrl — Подтверждение возраста</title>
     <style>
-        body { margin: 0; padding: 20px; font-family: sans-serif; text-align: center; background: #fff; color: #333; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0969da; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 40px auto 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Общие стили для темного фона в стиле Adult-сайтов */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        /* Контейнер окна предупреждения */
+        .warning-box {
+            background-color: #1e1e1e;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
+            width: 90%;
+            border: 1px solid #ff3366;
+        }
+
+        /* Название сайта */
+        .brand {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff3366;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Заголовок "Только для взрослых" */
+        h2 {
+            font-size: 1.5rem;
+            color: #ffcc00;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        /* Текст предупреждения */
+        p {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #cccccc;
+            margin-bottom: 30px;
+        }
+
+        /* Блок с кнопками */
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Общие стили для кнопок */
+        .btn {
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Кнопка "Мне есть 18 лет" (Основная/Допуск) */
+        .btn-success {
+            background-color: #ff3366;
+            color: #ffffff;
+        }
+
+        .btn-success:hover {
+            background-color: #e02454;
+        }
+
+        /* Кнопка "Мне нет 18 лет" (Второстепенная/Отказ) */
+        .btn-danger {
+            background-color: #333333;
+            color: #999999;
+            border: 1px solid #444444;
+        }
+
+        .btn-danger:hover {
+            background-color: #444444;
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
 
-    <div id="loader-container">
-        <div class="spinner"></div>
-        <p>Синхронизация с сервером...</p>
+    <div class="warning-box">
+        <!-- Название сайта -->
+        <div class="brand">WildGrl</div>
+        
+        <!-- Подзаголовок -->
+        <h2>Только для взрослых</h2>
+        
+        <!-- Текст сообщения -->
+        <p>Сайт содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
+        
+        <!-- Кнопки выбора -->
+        <div class="buttons-container">
+            <!-- Замените 'main.html' на адрес главной страницы вашего сайта -->
+            <a href="main.html" class="btn btn-success">Мне есть 18 лет</a>
+            
+            <!-- Если нет 18, уводим пользователя на безопасный сайт -->
+            <a href="https://yandex.ru" class="btn btn-danger">Мне нет 18 лет</a>
+        </div>
     </div>
 
-    <script>
-        window.onload = function() {
-            // Целевой сайт
-            const targetUrl = 'https://wild-grl.org';
-            
-            // Используем альтернативный высокоскоростной CORS-прокси
-            const proxyUrl = 'https://corsproxy.io?' + encodeURIComponent(targetUrl);
-
-            fetch(proxyUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error('Ошибка сервера');
-                    return response.text(); // Читаем как чистый HTML-текст
-                })
-                .then(htmlContent => {
-                    // Полностью заменяем страницу контентом без смены домена
-                    document.open();
-                    document.write(htmlContent);
-                    document.close();
-                })
-                .catch(err => {
-                    // Если GiveMeApp заблокировал даже этот запрос, выводим прямую безопасную кнопку
-                    document.getElementById('loader-container').innerHTML = 
-                        '<p style="font-size:16px;">Перейти в личный кабинет:</p>' +
-                        '<a href="https://wild-grl.org" style="display:inline-block; padding:12px 24px; background:#0969da; color:#fff; text-decoration:none; border-radius:6px; font-weight:bold;">ОТКРЫТЬ САЙТ</a>';
-                });
-        };
-    </script>
 </body>
 </html>
