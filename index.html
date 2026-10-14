@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- 1. ИСПРАВЛЕНО: Полный запрет кэширования для WebView на уровне HTTP-заголовков -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>WildGrl — Подтверждение возраста</title>
@@ -24,7 +29,6 @@
         }
 
         /* ─── ЭКРАН ЗАГРУЗКИ (СПЛЭШ-СКРИН) ─── */
-        /* Растягиваем через 4 угла 0,0,0,0, чтобы обойти баг сжатия WebView вверху */
         .loader-screen {
             position: fixed !important;
             top: 0 !important;
@@ -74,7 +78,6 @@
         }
 
         /* ─── ОСНОВНОЙ КОНТЕНТ ─── */
-        /* Контейнер жестко фиксируется на весь экран */
         .main-wrapper {
             position: fixed !important;
             top: 0 !important;
@@ -190,14 +193,14 @@
 </head>
 <body>
 
-    <!-- Экран загрузки (привязан к углам 0,0,0,0) -->
+    <!-- Экран загрузки -->
     <div class="loader-screen" id="loaderScreen">
         <div class="brand">WildGrl</div>
         <div class="spinner"></div>
-        <div class="network-status">Загрузка...</div>
+        <div class="network-status">Загрузка приложения...</div>
     </div>
 
-    <!-- Основной контент, центрированный в WebView -->
+    <!-- Основной контент -->
     <div class="main-wrapper">
         <div class="warning-box" id="warningBox">
             <div class="brand">WildGrl</div>
@@ -205,16 +208,23 @@
             <p>Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
             
             <div class="buttons-container">
-                <!-- Ваша прямая ссылка на витрину -->
                 <a href="https://wildgrl.space" class="btn btn-success">Мне есть 18 лет</a>
                 <a href="#" class="btn btn-danger" onclick="handleExit(event)">Мне нет 18 лет</a>
             </div>
         </div>
     </div>
 
-    <!-- СКРИПТ ПЕРЕНЕСЕН В САМЫЙ КОНЕЦ И ВЫПОЛНЯЕТСЯ МГНОВЕННО БЕЗ ОЖИДАНИЯ СОБЫТИЙ -->
+    <!-- МГНОВЕННЫЙ СКРИПТ БЕЗ ОЖИДАНИЯ СОБЫТИЙ -->
     <script>
-        // Принудительно запускаем таймер в обход системных проверок готовности документа
+        // 2. ИСПРАВЛЕНО: Полная очистка локального кэша сессии приложения при каждом запуске
+        try {
+            if (window.localStorage) window.localStorage.clear();
+            if (window.sessionStorage) window.sessionStorage.clear();
+        } catch (e) {
+            console.log("Кэш уже пуст");
+        }
+
+        // 3. ИСПРАВЛЕНО: Безотказный таймер, который отработает даже при обрывах сетевых потоков
         setTimeout(function() {
             var loader = document.getElementById('loaderScreen');
             var box = document.getElementById('warningBox');
