@@ -2,18 +2,23 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <!-- ИСПРАВЛЕНО: viewport-fit=cover принудительно заставляет WebView заполнять экран под шторкой -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>WildGrl — Подтверждение возраста</title>
     <style>
+        /* ИСПРАВЛЕНО: Полное физическое обнуление всех рамок и ограничений */
         html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            min-height: 100vh;
-            overflow: hidden;
-            background-color: #121212;
-            box-sizing: border-box;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            max-height: 100vh !important;
+            overflow: hidden !important;
+            background-color: #121212 !important;
+            position: fixed !important; /* Блокирует любые попытки WebView сжать страницу */
+            top: 0;
+            left: 0;
         }
 
         body {
@@ -23,35 +28,33 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding-top: env(safe-area-inset-top, 20px);
-            padding-bottom: env(safe-area-inset-bottom, 20px);
-            padding-left: 15px;
-            padding-right: 15px;
-            position: relative;
+            box-sizing: border-box;
+            
+            /* ИСПРАВЛЕНО: Убраны отступы safe-area, которые могли создавать пустые полосы сверху/снизу */
+            padding: 15px !important; 
         }
 
         /* ─── ЭКРАН ЗАГРУЗКИ (СПЛЭШ-СКРИН) ─── */
         .loader-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
             background-color: #121212;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
-        /* Анимированный крутящийся индикатор загрузки */
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border: 4px solid rgba(255, 51, 102, 0.1);
-            border-left-color: #ff3366; /* Фирменный розовый цвет */
+            border-left-color: #ff3366;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-top: 20px;
@@ -62,7 +65,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Класс для плавного скрытия лоадера через JS */
         .loader-screen.hidden {
             opacity: 0;
             visibility: hidden;
@@ -74,22 +76,20 @@
             padding: 35px 25px;
             border-radius: 16px;
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
-            max-width: 380px;
+            max-width: 360px;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            max-height: 90%;
+            max-height: 95%;
             
-            /* Эффект плавного появления самого окна */
             opacity: 0;
-            transform: scale(0.95);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: scale(0.96);
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        /* Класс для активации видимости окна */
         .warning-box.show {
             opacity: 1;
             transform: scale(1);
@@ -170,13 +170,13 @@
 </head>
 <body>
 
-    <!-- 1. Экран загрузки -->
+    <!-- Экран загрузки (3 секунды) -->
     <div class="loader-screen" id="loaderScreen">
         <div class="brand">WildGrl</div>
         <div class="spinner"></div>
     </div>
 
-    <!-- 2. Основное окно (скрыто изначально с помощью CSS-эффектов) -->
+    <!-- Основное окно -->
     <div class="warning-box" id="warningBox">
         <div class="brand">WildGrl</div>
         <h2>Только для взрослых</h2>
@@ -189,18 +189,16 @@
     </div>
 
     <script>
-        // Таймер на 3 секунды (3000 миллисекунд)
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const loader = document.getElementById('loaderScreen');
                 const box = document.getElementById('warningBox');
                 
-                loader.classList.add('hidden'); // Плавно убираем лоадер
-                box.classList.add('show');       // Плавно показываем форму 18+
+                loader.classList.add('hidden');
+                box.classList.add('show');
             }, 3000); 
         });
 
-        // Функция закрытия приложения
         function handleExit(event) {
             event.preventDefault();
             if (window.AndroidBridge && window.AndroidBridge.closeApplication) {
