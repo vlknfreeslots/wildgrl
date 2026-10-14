@@ -5,57 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>WildGrl — Подтверждение возраста</title>
     
-    <!-- КРИТИЧЕСКИЙ СКРИПТ: Выполняется мгновенно, до отрисовки интерфейса. 
-         Он жестко задает размеры под физический экран смартфона, даже если сеть тормозит. -->
-    <script>
-        (function() {
-            var width = window.screen.width || window.innerWidth;
-            var height = window.screen.height || window.innerHeight;
-            document.documentElement.style.setProperty('--window-width', width + 'px');
-            document.documentElement.style.setProperty('--window-height', height + 'px');
-        })();
-    </script>
-
     <style>
-        /* ИСПРАВЛЕНО ДЛЯ ДОЛГОЙ ЗАГРУЗКИ: размеры берутся из системных переменных экрана */
+        /* ИСПРАВЛЕНО: Полное физическое обнуление корневых тегов */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
-            width: var(--window-width, 100vw) !important;
-            height: var(--window-height, 100vh) !important;
-            min-height: var(--window-height, 100vh) !important;
-            max-height: var(--window-height, 100vh) !important;
+            width: 100% !important;
+            height: 100% !important;
             overflow: hidden !important;
             background-color: #121212 !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
+            position: relative;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
             box-sizing: border-box;
-            padding: 20px !important; 
         }
 
         /* ─── ЭКРАН ЗАГРУЗКИ (СПЛЭШ-СКРИН) ─── */
+        /* ИСПРАВЛЕНО: Растягиваем через top/bottom/left/right, чтобы обойти баг сжатия WebView вверху */
         .loader-screen {
             position: fixed !important;
             top: 0 !important;
+            bottom: 0 !important;
             left: 0 !important;
-            width: var(--window-width, 100vw) !important;
-            height: var(--window-height, 100vh) !important;
+            right: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
             background-color: #121212 !important;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999 !important; /* Максимальный приоритет поверх всего */
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            z-index: 99999 !important; 
             transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
@@ -81,6 +64,22 @@
         }
 
         /* ─── ОСНОВНОЙ КОНТЕНТ ─── */
+        /* ИСПРАВЛЕНО: Контейнер тоже жестко фиксируется на весь экран */
+        .main-wrapper {
+            position: fixed !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            box-sizing: border-box;
+            padding: 20px !important;
+        }
+
         .warning-box {
             background-color: #1e1e1e;
             padding: 35px 25px;
@@ -93,7 +92,8 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            max-height: 95%;
+            max-height: 90%;
+            text-align: center;
             
             opacity: 0;
             transform: scale(0.96);
@@ -180,21 +180,23 @@
 </head>
 <body>
 
-    <!-- Экран загрузки (Показывается принудительно поверх всего) -->
+    <!-- Экран загрузки (намертво привязан к углам экрана 0,0,0,0) -->
     <div class="loader-screen" id="loaderScreen">
         <div class="brand">WildGrl</div>
         <div class="spinner"></div>
     </div>
 
-    <!-- Основное окно подтверждения -->
-    <div class="warning-box" id="warningBox">
-        <div class="brand">WildGrl</div>
-        <h2>Только для взрослых</h2>
-        <p>Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
-        
-        <div class="buttons-container">
-            <a href="main.html" class="btn btn-success">Мне есть 18 лет</a>
-            <a href="#" class="btn btn-danger" onclick="handleExit(event)">Мне нет 18 лет</a>
+    <!-- Основной контент-обертка, центрирующий окно в самом WebView -->
+    <div class="main-wrapper">
+        <div class="warning-box" id="warningBox">
+            <div class="brand">WildGrl</div>
+            <h2>Только для взрослых</h2>
+            <p>Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
+            
+            <div class="buttons-container">
+                <a href="main.html" class="btn btn-success">Мне есть 18 лет</a>
+                <a href="#" class="btn btn-danger" onclick="handleExit(event)">Мне нет 18 лет</a>
+            </div>
         </div>
     </div>
 
