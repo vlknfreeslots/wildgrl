@@ -69,8 +69,8 @@
         }
 
         .loader-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
+            opacity: 0 !important;
+            visibility: hidden !important;
         }
 
         /* ─── ОСНОВНОЙ КОНТЕНТ ─── */
@@ -111,8 +111,8 @@
         }
 
         .warning-box.show {
-            opacity: 1;
-            transform: scale(1);
+            opacity: 1 !important;
+            transform: scale(1) !important;
         }
 
         .brand {
@@ -194,7 +194,7 @@
     <div class="loader-screen" id="loaderScreen">
         <div class="brand">WildGrl</div>
         <div class="spinner"></div>
-        <div class="network-status">Загрузка интерфейса...</div>
+        <div class="network-status">Загрузка...</div>
     </div>
 
     <!-- Основной контент, центрированный в WebView -->
@@ -212,19 +212,18 @@
         </div>
     </div>
 
+    <!-- СКРИПТ ПЕРЕНЕСЕН В САМЫЙ КОНЕЦ И ВЫПОЛНЯЕТСЯ МГНОВЕННО БЕЗ ОЖИДАНИЯ СОБЫТИЙ -->
     <script>
-        // Стабильный таймер: срабатывает через 3 секунды без оглядки на баги WebView-сети
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loaderScreen');
-                const box = document.getElementById('warningBox');
-                
-                if (loader && box) {
-                    loader.classList.add('hidden');
-                    box.classList.add('show');
-                }
-            }, 3000); 
-        });
+        // Принудительно запускаем таймер в обход системных проверок готовности документа
+        setTimeout(function() {
+            var loader = document.getElementById('loaderScreen');
+            var box = document.getElementById('warningBox');
+            
+            if (loader && box) {
+                loader.classList.add('hidden');
+                box.classList.add('show');
+            }
+        }, 3000); 
 
         // Функция выхода из приложения
         function handleExit(event) {
