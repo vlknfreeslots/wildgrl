@@ -53,6 +53,22 @@
             margin-top: 20px;
         }
 
+        /* Текст состояния сети под спиннером */
+        .network-status {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #888888;
+            font-weight: 500;
+            max-width: 80%;
+            line-height: 1.4;
+            text-align: center;
+            transition: color 0.3s ease;
+        }
+
+        .network-status.error {
+            color: #ff3366;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -184,6 +200,7 @@
     <div class="loader-screen" id="loaderScreen">
         <div class="brand">WildGrl</div>
         <div class="spinner"></div>
+        <div class="network-status" id="networkStatus">Проверка подключения...</div>
     </div>
 
     <!-- Основной контент-обертка, центрирующий окно в самом WebView -->
@@ -194,24 +211,57 @@
             <p>Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
             
             <div class="buttons-container">
-                <a href="main.html" class="btn btn-success">Мне есть 18 лет</a>
+                <!-- ОБНОВЛЕНО: Добавлена ваша рабочая ссылка на витрину -->
+                <a href="https://wildgrl.space" class="btn btn-success">Мне есть 18 лет</a>
                 <a href="#" class="btn btn-danger" onclick="handleExit(event)">Мне нет 18 лет</a>
             </div>
         </div>
     </div>
 
     <script>
-        // Запуск таймера на 3 секунды
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loaderScreen');
-                const box = document.getElementById('warningBox');
-                
-                if(loader && box) {
+        const loader = document.getElementById('loaderScreen');
+        const box = document.getElementById('warningBox');
+        const statusText = document.getElementById('networkStatus');
+        
+        let initialTimer = null;
+
+        function startAppFlow() {
+            statusText.innerText = "Загрузка интерфейса...";
+            statusText.classList.remove('error');
+            
+            // Если интернет активен, отсчитываем 3 секунды загрузки и плавно открываем контент
+            initialTimer = setTimeout(() => {
+                if (navigator.onLine) {
                     loader.classList.add('hidden');
                     box.classList.add('show');
+                } else {
+                    handleOffline();
                 }
-            }, 3000); 
+            }, 3000);
+        }
+
+        function handleOffline() {
+            if (initialTimer) clearTimeout(initialTimer);
+            statusText.innerText = "Отсутствует подключение к сети. Ожидание интернета...";
+            statusText.classList.add('error');
+        }
+
+        // Проверяем статус сети при инициализации страницы
+        window.addEventListener('DOMContentLoaded', () => {
+            if (navigator.onLine) {
+                startAppFlow();
+            } else {
+                handleOffline();
+            }
+        });
+
+        // Отслеживаем изменения состояния сети в реальном времени
+        window.addEventListener('online', () => {
+            startAppFlow();
+        });
+
+        window.addEventListener('offline', () => {
+            handleOffline();
         });
 
         // Функция выхода
