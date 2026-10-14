@@ -2,39 +2,73 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Блокирует масштабирование пальцами и включает растягивание под челки/вырезы дисплея -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>WildGrl — Подтверждение возраста</title>
     <style>
-        /* ИСПРАВЛЕНО ДЛЯ GIVEMEAPP: жесткое растягивание корневых тегов на 100% высоты устройства */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             min-height: 100vh;
-            overflow: hidden; /* Запрещает случайную прокрутку экрана */
-            background-color: #121212; /* Убирает белые полосы вокруг WebView */
+            overflow: hidden;
+            background-color: #121212;
             box-sizing: border-box;
         }
 
         body {
-            /* Системные шрифты iOS/Android для нативного вида приложения */
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-            
-            /* Безопасные отступы от краев экрана, если GiveMeApp использует Fullscreen */
             padding-top: env(safe-area-inset-top, 20px);
             padding-bottom: env(safe-area-inset-bottom, 20px);
             padding-left: 15px;
             padding-right: 15px;
+            position: relative;
         }
 
-        /* Контейнер окна предупреждения */
+        /* ─── ЭКРАН ЗАГРУЗКИ (СПЛЭШ-СКРИН) ─── */
+        .loader-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #121212;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        /* Анимированный крутящийся индикатор загрузки */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 51, 102, 0.1);
+            border-left-color: #ff3366; /* Фирменный розовый цвет */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Класс для плавного скрытия лоадера через JS */
+        .loader-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* ─── ОСНОВНОЙ КОНТЕНТ ─── */
         .warning-box {
             background-color: #1e1e1e;
             padding: 35px 25px;
@@ -42,15 +76,25 @@
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
             max-width: 380px;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.15); /* Более мягкая нативная рамка */
+            border: 1px solid rgba(255, 255, 255, 0.15);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            max-height: 90%; /* Защита от вылета кнопок на очень маленьких экранах */
+            max-height: 90%;
+            
+            /* Эффект плавного появления самого окна */
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        /* Название приложения */
+        /* Класс для активации видимости окна */
+        .warning-box.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
         .brand {
             font-size: 2.4rem;
             font-weight: 800;
@@ -59,7 +103,6 @@
             letter-spacing: 2px;
         }
 
-        /* Заголовок "Только для взрослых" */
         h2 {
             font-size: 1.25rem;
             color: #ffffff;
@@ -68,23 +111,20 @@
             font-weight: 600;
         }
 
-        /* Текст предупреждения */
         p {
             font-size: 0.95rem;
             line-height: 1.5;
-            color: #cccccc; /* Чуть мягче, чем чисто белый, для лучшей читаемости */
+            color: #cccccc;
             margin-top: 0;
             margin-bottom: 30px;
         }
 
-        /* Блок с кнопками */
         .buttons-container {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        /* Общие стили для кнопок */
         .btn {
             padding: 15px;
             font-size: 1rem;
@@ -96,95 +136,79 @@
             text-decoration: none;
             display: block;
             box-sizing: border-box;
-            
-            /* Специфичные фиксы для WebView мобильных телефонов */
-            -webkit-tap-highlight-color: transparent; /* Убирает серый/синий квадрат при нажатии */
-            -webkit-user-select: none; /* Запрещает выделение текста кнопки при долгом зажатии */
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
             user-select: none;
         }
 
-        /* Эффект нажатия пальцем (фидбек) */
         .btn:active {
             transform: scale(0.97);
             opacity: 0.9;
         }
 
-        /* Кнопка "Мне есть 18 лет" */
         .btn-success {
             background-color: #ff3366;
             color: #ffffff;
             box-shadow: 0 4px 12px rgba(255, 51, 102, 0.3);
         }
 
-        /* Кнопка "Мне нет 18 лет" */
         .btn-danger {
             background-color: #2a2a2a;
             color: #aaaaaa;
             border: 1px solid #3a3a3a;
         }
 
-        /* Адаптация под экстремально маленькие или повернутые горизонтально экраны */
         @media (max-height: 580px), (max-width: 340px) {
-            .warning-box {
-                padding: 20px 20px;
-            }
-            .brand {
-                font-size: 1.8rem;
-                margin-bottom: 4px;
-            }
-            h2 {
-                font-size: 1.1rem;
-                margin-bottom: 10px;
-            }
-            p {
-                font-size: 0.85rem;
-                margin-bottom: 20px;
-            }
-            .btn {
-                padding: 12px;
-                font-size: 0.95rem;
-            }
-            .buttons-container {
-                gap: 8px;
-            }
+            .warning-box { padding: 20px 20px; }
+            .brand { font-size: 1.8rem; margin-bottom: 4px; }
+            h2 { font-size: 1.1rem; margin-bottom: 10px; }
+            p { font-size: 0.85rem; margin-bottom: 20px; }
+            .btn { padding: 12px; font-size: 0.95rem; }
+            .buttons-container { gap: 8px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="warning-box">
-        <!-- Логотип / Название -->
+    <!-- 1. Экран загрузки -->
+    <div class="loader-screen" id="loaderScreen">
         <div class="brand">WildGrl</div>
-        
-        <!-- Заголовок -->
+        <div class="spinner"></div>
+    </div>
+
+    <!-- 2. Основное окно (скрыто изначально с помощью CSS-эффектов) -->
+    <div class="warning-box" id="warningBox">
+        <div class="brand">WildGrl</div>
         <h2>Только для взрослых</h2>
-        
-        <!-- Описание -->
         <p>Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
         
-        <!-- Контейнер кнопок -->
         <div class="buttons-container">
-            <!-- Вход на главную страницу вашего сайта -->
             <a href="main.html" class="btn btn-success">Мне есть 18 лет</a>
-            
-            <!-- Безопасный выход через функцию контроля WebView -->
             <a href="#" class="btn btn-danger" onclick="handleExit(event)">Мне нет 18 лет</a>
         </div>
     </div>
 
     <script>
-        // Функция обработки клика по кнопке "Мне нет 18 лет"
+        // Таймер на 3 секунды (3000 миллисекунд)
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loaderScreen');
+                const box = document.getElementById('warningBox');
+                
+                loader.classList.add('hidden'); // Плавно убираем лоадер
+                box.classList.add('show');       // Плавно показываем форму 18+
+            }, 3000); 
+        });
+
+        // Функция закрытия приложения
         function handleExit(event) {
-            event.preventDefault(); // Останавливаем переход по ссылке '#'
-            
-            // Проверяем наличие мостов GiveMeApp / Android / iOS для закрытия приложения
+            event.preventDefault();
             if (window.AndroidBridge && window.AndroidBridge.closeApplication) {
                 window.AndroidBridge.closeApplication();
             } 
             else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.closeApplication) {
                 window.webkit.messageHandlers.closeApplication.postMessage(null);
             } 
-            // Если мосты не обнаружены (например, открыли просто в Chrome на ПК), уводим на безопасный сайт
             else {
                 window.location.href = "https://yandex.ru";
             }
