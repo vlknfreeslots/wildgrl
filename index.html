@@ -6,6 +6,7 @@
     <title>WildGrl — Подтверждение возраста</title>
     
     <style>
+        /* Жесткая фиксация размеров для предотвращения бага GiveMeApp со сжатием вверху */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -40,6 +41,7 @@
             transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
+        /* Индикатор кручения */
         .spinner {
             width: 45px;
             height: 45px;
@@ -50,15 +52,15 @@
             margin-top: 20px;
         }
 
-        /* Текст ошибки под лоадером, если сеть пропала */
+        /* Статус интернета */
         .network-status {
             margin-top: 25px;
             font-size: 0.9rem;
             color: #888888;
             font-weight: 500;
-            transition: color 0.3s ease;
             max-width: 80%;
             line-height: 1.4;
+            text-align: center;
         }
 
         .network-status.error {
@@ -167,6 +169,7 @@
             opacity: 0.9;
         }
 
+        /* Кнопка ДА с вашей ссылкой */
         .btn-success {
             background-color: #ff3366;
             color: #ffffff;
@@ -191,14 +194,14 @@
 </head>
 <body>
 
-    <!-- Экран загрузки с динамическим текстом состояния сети -->
+    <!-- Заставка загрузки (Крутится вечно, пока нет интернета) -->
     <div class="loader-screen" id="loaderScreen">
         <div class="brand">WildGrl</div>
         <div class="spinner"></div>
         <div class="network-status" id="networkStatus">Проверка подключения...</div>
     </div>
 
-    <!-- Основной контент-обертка -->
+    <!-- Основная плашка верификации -->
     <div class="main-wrapper">
         <div class="warning-box" id="warningBox">
             <div class="brand">WildGrl</div>
@@ -206,7 +209,8 @@
             <p>Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
             
             <div class="buttons-container">
-                <a href="main.html" class="btn btn-success">Мне есть 18 лет</a>
+                <!-- ВСТАВЛЕНА ВАША ССЫЛКА ДЛЯ КНОПКИ ДА -->
+                <a href="https://wildgrl.space/p/x-go6mmb1jg" class="btn btn-success">Мне есть 18 лет</a>
                 <a href="#" class="btn btn-danger" onclick="handleExit(event)">Мне нет 18 лет</a>
             </div>
         </div>
@@ -223,7 +227,7 @@
             statusText.innerText = "Загрузка интерфейса...";
             statusText.classList.remove('error');
             
-            // Если интернет есть, запускаем таймер на 3 секунды
+            // Если сеть есть, отсчитываем 3 секунды загрузки и плавно открываем сайт
             initialTimer = setTimeout(() => {
                 if (navigator.onLine) {
                     loader.classList.add('hidden');
@@ -240,7 +244,7 @@
             statusText.classList.add('error');
         }
 
-        // Проверка при первой загрузке страницы
+        // Проверка сети при первом старте
         window.addEventListener('DOMContentLoaded', () => {
             if (navigator.onLine) {
                 startAppFlow();
@@ -249,7 +253,7 @@
             }
         });
 
-        // Слушатели системных событий изменения статуса сети смартфона
+        // Мониторинг сети "на лету" (если интернет включат/выключат во время работы)
         window.addEventListener('online', () => {
             startAppFlow();
         });
@@ -258,7 +262,7 @@
             handleOffline();
         });
 
-        // Функция выхода
+        // Функция закрытия приложения при нажатии "Мне нет 18"
         function handleExit(event) {
             event.preventDefault();
             if (window.AndroidBridge && window.AndroidBridge.closeApplication) {
