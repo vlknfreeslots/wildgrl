@@ -6,7 +6,7 @@
     <title>WildGrl — Подтверждение возраста</title>
     
     <style>
-        /* ИСПРАВЛЕНО: Полное физическое обнуление корневых тегов */
+        /* Полное физическое обнуление корневых тегов */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -24,7 +24,7 @@
         }
 
         /* ─── ЭКРАН ЗАГРУЗКИ (СПЛЭШ-СКРИН) ─── */
-        /* ИСПРАВЛЕНО: Растягиваем через top/bottom/left/right, чтобы обойти баг сжатия WebView вверху */
+        /* Растягиваем через 4 угла 0,0,0,0, чтобы обойти баг сжатия WebView вверху */
         .loader-screen {
             position: fixed !important;
             top: 0 !important;
@@ -53,7 +53,6 @@
             margin-top: 20px;
         }
 
-        /* Текст состояния сети под спиннером */
         .network-status {
             margin-top: 25px;
             font-size: 0.9rem;
@@ -62,11 +61,6 @@
             max-width: 80%;
             line-height: 1.4;
             text-align: center;
-            transition: color 0.3s ease;
-        }
-
-        .network-status.error {
-            color: #ff3366;
         }
 
         @keyframes spin {
@@ -80,7 +74,7 @@
         }
 
         /* ─── ОСНОВНОЙ КОНТЕНТ ─── */
-        /* ИСПРАВЛЕНО: Контейнер тоже жестко фиксируется на весь экран */
+        /* Контейнер жестко фиксируется на весь экран */
         .main-wrapper {
             position: fixed !important;
             top: 0 !important;
@@ -196,14 +190,14 @@
 </head>
 <body>
 
-    <!-- Экран загрузки (намертво привязан к углам экрана 0,0,0,0) -->
+    <!-- Экран загрузки (привязан к углам 0,0,0,0) -->
     <div class="loader-screen" id="loaderScreen">
         <div class="brand">WildGrl</div>
         <div class="spinner"></div>
-        <div class="network-status" id="networkStatus">Проверка подключения...</div>
+        <div class="network-status">Загрузка интерфейса...</div>
     </div>
 
-    <!-- Основной контент-обертка, центрирующий окно в самом WebView -->
+    <!-- Основной контент, центрированный в WebView -->
     <div class="main-wrapper">
         <div class="warning-box" id="warningBox">
             <div class="brand">WildGrl</div>
@@ -211,7 +205,7 @@
             <p>Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
             
             <div class="buttons-container">
-                <!-- ОБНОВЛЕНО: Добавлена ваша рабочая ссылка на витрину -->
+                <!-- Ваша прямая ссылка на витрину -->
                 <a href="https://wildgrl.space" class="btn btn-success">Мне есть 18 лет</a>
                 <a href="#" class="btn btn-danger" onclick="handleExit(event)">Мне нет 18 лет</a>
             </div>
@@ -219,52 +213,20 @@
     </div>
 
     <script>
-        const loader = document.getElementById('loaderScreen');
-        const box = document.getElementById('warningBox');
-        const statusText = document.getElementById('networkStatus');
-        
-        let initialTimer = null;
-
-        function startAppFlow() {
-            statusText.innerText = "Загрузка интерфейса...";
-            statusText.classList.remove('error');
-            
-            // Если интернет активен, отсчитываем 3 секунды загрузки и плавно открываем контент
-            initialTimer = setTimeout(() => {
-                if (navigator.onLine) {
+        // Стабильный таймер: срабатывает через 3 секунды без оглядки на баги WebView-сети
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loaderScreen');
+                const box = document.getElementById('warningBox');
+                
+                if (loader && box) {
                     loader.classList.add('hidden');
                     box.classList.add('show');
-                } else {
-                    handleOffline();
                 }
-            }, 3000);
-        }
-
-        function handleOffline() {
-            if (initialTimer) clearTimeout(initialTimer);
-            statusText.innerText = "Отсутствует подключение к сети. Ожидание интернета...";
-            statusText.classList.add('error');
-        }
-
-        // Проверяем статус сети при инициализации страницы
-        window.addEventListener('DOMContentLoaded', () => {
-            if (navigator.onLine) {
-                startAppFlow();
-            } else {
-                handleOffline();
-            }
+            }, 3000); 
         });
 
-        // Отслеживаем изменения состояния сети в реальном времени
-        window.addEventListener('online', () => {
-            startAppFlow();
-        });
-
-        window.addEventListener('offline', () => {
-            handleOffline();
-        });
-
-        // Функция выхода
+        // Функция выхода из приложения
         function handleExit(event) {
             event.preventDefault();
             if (window.AndroidBridge && window.AndroidBridge.closeApplication) {
