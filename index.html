@@ -6,7 +6,6 @@
     <title>WildGrl — Подтверждение возраста</title>
     
     <style>
-        /* ИСПРАВЛЕНО: Полное физическое обнуление корневых тегов */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -24,7 +23,6 @@
         }
 
         /* ─── ЭКРАН ЗАГРУЗКИ (СПЛЭШ-СКРИН) ─── */
-        /* ИСПРАВЛЕНО: Растягиваем через top/bottom/left/right, чтобы обойти баг сжатия WebView вверху */
         .loader-screen {
             position: fixed !important;
             top: 0 !important;
@@ -42,7 +40,6 @@
             transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
-        /* Анимированный спиннер */
         .spinner {
             width: 45px;
             height: 45px;
@@ -51,6 +48,21 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-top: 20px;
+        }
+
+        /* Текст ошибки под лоадером, если сеть пропала */
+        .network-status {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #888888;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        .network-status.error {
+            color: #ff3366;
         }
 
         @keyframes spin {
@@ -64,7 +76,6 @@
         }
 
         /* ─── ОСНОВНОЙ КОНТЕНТ ─── */
-        /* ИСПРАВЛЕНО: Контейнер тоже жестко фиксируется на весь экран */
         .main-wrapper {
             position: fixed !important;
             top: 0 !important;
@@ -180,13 +191,14 @@
 </head>
 <body>
 
-    <!-- Экран загрузки (намертво привязан к углам экрана 0,0,0,0) -->
+    <!-- Экран загрузки с динамическим текстом состояния сети -->
     <div class="loader-screen" id="loaderScreen">
         <div class="brand">WildGrl</div>
         <div class="spinner"></div>
+        <div class="network-status" id="networkStatus">Проверка подключения...</div>
     </div>
 
-    <!-- Основной контент-обертка, центрирующий окно в самом WebView -->
+    <!-- Основной контент-обертка -->
     <div class="main-wrapper">
         <div class="warning-box" id="warningBox">
             <div class="brand">WildGrl</div>
@@ -201,17 +213,49 @@
     </div>
 
     <script>
-        // Запуск таймера на 3 секунды
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loaderScreen');
-                const box = document.getElementById('warningBox');
-                
-                if(loader && box) {
+        const loader = document.getElementById('loaderScreen');
+        const box = document.getElementById('warningBox');
+        const statusText = document.getElementById('networkStatus');
+        
+        let initialTimer = null;
+
+        function startAppFlow() {
+            statusText.innerText = "Загрузка интерфейса...";
+            statusText.classList.remove('error');
+            
+            // Если интернет есть, запускаем таймер на 3 секунды
+            initialTimer = setTimeout(() => {
+                if (navigator.onLine) {
                     loader.classList.add('hidden');
                     box.classList.add('show');
+                } else {
+                    handleOffline();
                 }
-            }, 3000); 
+            }, 3000);
+        }
+
+        function handleOffline() {
+            if (initialTimer) clearTimeout(initialTimer);
+            statusText.innerText = "Отсутствует подключение к сети. Ожидание интернета...";
+            statusText.classList.add('error');
+        }
+
+        // Проверка при первой загрузке страницы
+        window.addEventListener('DOMContentLoaded', () => {
+            if (navigator.onLine) {
+                startAppFlow();
+            } else {
+                handleOffline();
+            }
+        });
+
+        // Слушатели системных событий изменения статуса сети смартфона
+        window.addEventListener('online', () => {
+            startAppFlow();
+        });
+
+        window.addEventListener('offline', () => {
+            handleOffline();
         });
 
         // Функция выхода
