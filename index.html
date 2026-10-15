@@ -1,119 +1,51 @@
-<!DOCTYPE html>
-<html lang="ru" style="background-color:#121212!important;">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>WildGrl</title>
-    <style>
-        /* Мгновенный черный фон, чтобы убрать белый экран WebView */
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow: hidden !important;
-            background: #121212 !important;
-            background-color: #121212 !important;
-            position: relative;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: #ffffff;
-            box-sizing: border-box;
-        }
-        .loader-screen {
-            position: fixed !important;
-            top: 0!important; bottom: 0!important; left: 0!important; right: 0!important;
-            width: 100% !important; height: 100% !important;
-            background-color: #121212 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
-            z-index: 99999 !important;
-        }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 51, 102, 0.1);
-            border-left-color: #ff3366;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-top: 20px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .main-wrapper {
-            position: fixed !important;
-            top: 0!important; bottom: 0!important; left: 0!important; right: 0!important;
-            display: flex !important; justify-content: center !important; align-items: center !important;
-            padding: 20px !important;
-        }
-        .warning-box {
-            background-color: #1e1e1e;
-            padding: 35px 25px;
-            border-radius: 16px;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
-            max-width: 360px;
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            text-align: center;
-            display: none; /* Изначально полностью убран из дерева рендеринга */
-        }
-        .brand { font-size: 2.4rem; font-weight: 800; margin-bottom: 6px; letter-spacing: 2px; }
-        h2 { font-size: 1.25rem; margin-top: 0; margin-bottom: 16px; font-weight: 600; }
-        p { font-size: 0.95rem; line-height: 1.5; color: #cccccc; margin-bottom: 30px; }
-        .buttons-container { display: flex; flex-direction: column; gap: 12px; }
-        .btn {
-            padding: 15px; font-size: 1rem; font-weight: 700; border: none; border-radius: 8px;
-            text-decoration: none; display: block; -webkit-tap-highlight-color: transparent;
-            user-select: none; transition: background-color 0.2s;
-        }
-        .btn-success { background-color: #ff3366; color: #ffffff; }
-        .btn-danger { background-color: #2a2a2a; color: #aaaaaa; border: 1px solid #3a3a3a; }
-    </style>
-</head>
-<body>
+<!-- ГЛАВНЫЙ ФИКС: Используем viewport-единицы vw/vh и обнуляем любые родительские ограничения -->
+<div style="position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; min-width: 100vw !important; min-height: 100vh !important; background-color: #121212 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; z-index: 999999 !important;">
 
-    <div class="loader-screen" id="loaderScreen">
-        <div class="brand">WildGrl</div>
-        <div class="spinner"></div>
+    <!-- 1. ЭКРАН ЗАГРУЗКИ: Намертво привязан к границам экрана устройства -->
+    <div style="position: absolute !important; top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; height: 100% !important; background-color: #121212 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; z-index: 99999 !important;
+                animation: fadeOutLoader 0.5s ease 3s forwards !important;">
+        
+        <div style="font-size: 2.4rem !important; font-weight: 800 !important; color: #ffffff !important; letter-spacing: 2px !important;">WildGrl</div>
+        
+        <div style="width: 40px !important; height: 40px !important; border: 4px solid rgba(255, 51, 102, 0.1) !important; border-left-color: #ff3366 !important; border-radius: 50% !important; margin-top: 20px !important;
+                    animation: spinCircle 0.8s linear infinite !important;"></div>
     </div>
 
-    <div class="main-wrapper">
-        <div class="warning-box" id="warningBox">
-            <div class="brand">WildGrl</div>
-            <h2>Только для взрослых</h2>
-            <p>Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
-            <div class="buttons-container">
-                <a href="https://wildgrl.space" class="btn btn-success">Мне есть 18 лет</a>
-                <a href="#" class="btn btn-danger" onclick="handleExit(event)">Мне нет 18 лет</a>
+    <!-- 2. ОСНОВНОЙ КОНТЕНТ: Центрирует окно верификации строго по центру экрана -->
+    <div style="position: absolute !important; top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 20px !important; box-sizing: border-box !important; z-index: 1000 !important;
+                opacity: 0 !important; animation: fadeInBox 0.5s ease 3.2s forwards !important;">
+        
+        <!-- Окно подтверждения возраста -->
+        <div style="background-color: #1e1e1e !important; padding: 35px 25px !important; border-radius: 16px !important; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7) !important; max-width: 360px !important; width: 100% !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; box-sizing: border-box !important; display: flex !important; flex-direction: column !important; justify-content: center !important; text-align: center !important;">
+            
+            <div style="font-size: 2.4rem !important; font-weight: 800 !important; color: #ffffff !important; margin-bottom: 6px !important; letter-spacing: 2px !important;">WildGrl</div>
+            
+            <h2 style="font-size: 1.25rem !important; color: #ffffff !important; margin-top: 0 !important; margin-bottom: 16px !important; font-weight: 600 !important;">Только для взрослых</h2>
+            
+            <p style="font-size: 0.95rem !important; line-height: 1.5 !important; color: #cccccc !important; margin-top: 0 !important; margin-bottom: 30px !important;">Приложение содержит материалы для взрослых. Доступ разрешён только совершеннолетним.</p>
+            
+            <div style="display: flex !important; flex-direction: column !important; gap: 12px !important;">
+                <a href="https://wildgrl.space" style="padding: 15px !important; font-size: 1rem !important; font-weight: 700 !important; border: none !important; border-radius: 8px !important; text-decoration: none !important; display: block !important; box-shadow: 0 4px 12px rgba(255, 51, 102, 0.3) !important; background-color: #ff3366 !important; color: #ffffff !important; -webkit-tap-highlight-color: transparent !important; user-select: none !important;">Мне есть 18 лет</a>
+                <a href="https://yandex.ru" style="padding: 15px !important; font-size: 1rem !important; font-weight: 700 !important; border: 1px solid #3a3a3a !important; border-radius: 8px !important; text-decoration: none !important; display: block !important; background-color: #2a2a2a !important; color: #aaaaaa !important; -webkit-tap-highlight-color: transparent !important; user-select: none !important;">Мне нет 18 лет</a>
             </div>
+            
         </div>
     </div>
 
-    <script>
-        // Таймер перенесен на самый верх выполнения
-        setTimeout(function() {
-            var loader = document.getElementById('loaderScreen');
-            var box = document.getElementById('warningBox');
-            if (loader && box) {
-                loader.style.display = 'none';
-                box.style.display = 'flex';
-            }
-        }, 3000);
+</div>
 
-        function handleExit(event) {
-            event.preventDefault();
-            if (window.AndroidBridge && window.AndroidBridge.closeApplication) {
-                window.AndroidBridge.closeApplication();
-            } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.closeApplication) {
-                window.webkit.messageHandlers.closeApplication.postMessage(null);
-            } else {
-                window.location.href = "https://yandex.ru";
-            }
-        }
-    </script>
-</body>
-</html>
+<!-- СТИЛИ АНИМАЦИИ: Единственный блок, который пропускается GiveMeApp -->
+<style>
+    @keyframes spinCircle {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeOutLoader {
+        0% { opacity: 1; visibility: visible; }
+        100% { opacity: 0; visibility: hidden; }
+    }
+    @keyframes fadeInBox {
+        0% { opacity: 0; transform: scale(0.96); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+</style>
